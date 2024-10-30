@@ -1,0 +1,28 @@
+name: CI
+on: workflow_dispatch
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Setup Go environment
+        uses: actions/setup-go@v5.1.0        
+      - name: install dependencies
+        run: go mod download
+      - name: build app
+        run: go build -o main .
+      - name: Testing
+        run: echo "TEST CODE GOES HERE"
+
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Docker Setup Build
+        uses: docker/setup-buildx-action@v3.7.1
+      - name: create image tag
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: build docker image
+        run: docker build -t 010526286234.dkr.ecr.us-east-1.amazonaws.com/sample:${{ steps.vars.outputs.sha_short }}
+      
