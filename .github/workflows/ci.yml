@@ -24,5 +24,5 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: build docker image
-        run: docker build -t 010526286234.dkr.ecr.us-east-1.amazonaws.com/sample:${{ steps.vars.outputs.sha_short }}
+        run: docker build -t 010526286234.dkr.ecr.us-east-1.amazonaws.com/sample:${{ steps.vars.outputs.sha_short }} .
       
