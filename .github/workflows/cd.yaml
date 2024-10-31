@@ -1,0 +1,28 @@
+name: CI
+on: workflow_dispatch
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/ci.yml
+  
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Set up Kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          
+      - name: create image tag
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        
+      - name: helm deploy
+        run: |
+          cd helm
+          helm upgrade go-web-app -f values.yaml --namespace default --set image.tag="${{ steps.vars.outputs.sha_short }}"
+      
+  
+     
