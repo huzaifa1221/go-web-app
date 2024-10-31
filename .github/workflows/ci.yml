@@ -25,4 +25,19 @@ jobs:
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: build docker image
         run: docker build -t 010526286234.dkr.ecr.us-east-1.amazonaws.com/sample:${{ steps.vars.outputs.sha_short }} .
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: push image to Amazon ECR
+        # env:
+          # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: docker push 010526286234.dkr.ecr.us-east-1.amazonaws.com/sample:${{ steps.vars.outputs.sha_short }}
       
